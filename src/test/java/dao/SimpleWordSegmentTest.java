@@ -13,12 +13,31 @@ public class SimpleWordSegmentTest {
     public void Test() {
         String string = "中国人民银行指出我国最近经济不景气";
 //        String string = "习近平今日出席了中央气象台的联欢晚会";
+        long start = System.currentTimeMillis();
         List<String> result = segment.MM(string);
-
+        long end = System.currentTimeMillis();
         Assert.assertNotNull(result);
         for (String str : result) {
             System.out.print(str + "/");
         }
+        System.out.println();
+        System.out.println("time: " + (end - start) + "ms");
+
+    }
+
+    @Test
+    public void TestRMM() {
+        String string = "中国人民银行指出我国最近经济不景气";
+//        String string = "习近平今日出席了中央气象台的联欢晚会";
+        long start = System.currentTimeMillis();
+        List<String> result = segment.RMM(string);
+        long end = System.currentTimeMillis();
+        Assert.assertNotNull(result);
+        for (String str : result) {
+            System.out.print(str + "/");
+        }
+        System.out.println();
+        System.out.println("time: " + (end - start) + "ms");
 
     }
 
