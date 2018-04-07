@@ -8,6 +8,7 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -53,6 +54,7 @@ public class SimpleWordSegment implements WordSegment {
      */
     @Override
     public List<String> MM(String text) {
+        logger.debug("分词算法为：MM算法");
         logger.debug("要分词的句子为：" + text);
         List<String> result = new ArrayList<>();
         while(text.length()>0){
@@ -79,6 +81,7 @@ public class SimpleWordSegment implements WordSegment {
 
     @Override
     public List<String> RMM(String text) {
+        logger.debug("分词算法为：RMM算法");
         logger.debug("要分词的句子为：" + text);
         List<String> result = new ArrayList<>();
         while(text.length()>0){
@@ -100,6 +103,9 @@ public class SimpleWordSegment implements WordSegment {
             //从待分词文本中去除已经分词的文本
             text=text.substring(0, text.length() - tryWord.length());
         }
+
+        Collections.reverse(result);
+
         return result;
     }
 

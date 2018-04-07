@@ -27,8 +27,9 @@ public class SimpleWordSegmentTest {
 
     @Test
     public void TestRMM() {
-        String string = "中国人民银行指出我国最近经济不景气";
+//        String string = "中国人民银行指出我国最近经济不景气";
 //        String string = "习近平今日出席了中央气象台的联欢晚会";
+        String string = "结婚的和尚未结婚的";
         long start = System.currentTimeMillis();
         List<String> result = segment.RMM(string);
         long end = System.currentTimeMillis();
