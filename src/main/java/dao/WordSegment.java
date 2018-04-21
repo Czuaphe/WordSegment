@@ -35,4 +35,11 @@ public interface WordSegment {
      */
     List<String> BM(String string);
 
+    /**
+     * 全切分算法（FullSegmentation）
+     * @param string
+     * @return
+     */
+    List<String> FS(String string);
+
 }

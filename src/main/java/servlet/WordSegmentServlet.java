@@ -66,7 +66,7 @@ public class WordSegmentServlet extends HttpServlet {
      */
     public void segment2Json(String text) {
 
-        String[] methods = {"MM", "RMM", "MC", "BM"};
+        String[] methods = {"MM", "RMM", "BM", "MC"};
 
         if (text == null || text.equals("")) {
             json.addProperty("status", false);
@@ -106,7 +106,7 @@ public class WordSegmentServlet extends HttpServlet {
     }
 
     /**
-     * 得到对应的分词方法
+     * 得到对应的分词方法的结果
      * @param method
      * @param text
      * @return
