@@ -1,13 +1,8 @@
 package dao;
 
 import org.apache.log4j.Logger;
-import util.NgramFactory;
+import resource.Resource;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -21,36 +16,10 @@ public class SimpleWordSegment implements WordSegment {
     private static Logger logger = Logger.getLogger(SimpleWordSegment.class);
 
     // 得到词频映射表（二元模型）
-    private static final Map<String, Integer> N_GRAM = NgramFactory.getNgram();
+    private final Map<String, Integer> N_GRAM = Resource.getBigram();
     // 词典列表
-    private static final List<String> DIC = new ArrayList<>();
-    private static int MAX_LENGTH = 0;	// 词典中词语的最大长度
-    // 静态static块
-    static {
-        try {
-            System.out.println("开始初始化词典");
-            int max=1;
-            int count=0;
-            URL url = SimpleWordSegment.class.getClassLoader().getResource("dic.txt");
-            File file = new File(url.getPath());
-            System.out.println(url.getPath());
-            List<String> lines = Files.readAllLines(file.toPath(), Charset.forName("utf-8"));
-            for(String line : lines){
-                DIC.add(line);
-                count++;
-                if(line.length()>max){
-                    max=line.length();
-//                    System.out.println(line);
-                }
-            }
-            MAX_LENGTH = max;
-            System.out.println("完成初始化词典，词数目："+count);
-            System.out.println("最大分词长度："+MAX_LENGTH);
-        } catch (IOException ex) {
-            System.err.println("词典装载失败:");
-            ex.printStackTrace();
-        }
-    }
+    private final List<String> DIC = Resource.getDictionary();
+    private int MAX_LENGTH = Resource.getDicMaxLength();	// 词典中词语的最大长度
 
     /**
      * 实现正向最大匹配算法

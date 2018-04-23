@@ -1,5 +1,8 @@
 package listener;
 
+import org.apache.log4j.Logger;
+import resource.Resource;
+
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
@@ -11,6 +14,8 @@ import javax.servlet.http.HttpSessionBindingEvent;
 @WebListener()
 public class DataContextListener implements ServletContextListener,
         HttpSessionListener, HttpSessionAttributeListener {
+
+    private static Logger logger = Logger.getLogger(DataContextListener.class);
 
     // Public constructor is required by servlet spec
     public DataContextListener() {
@@ -24,9 +29,9 @@ public class DataContextListener implements ServletContextListener,
          initialized(when the Web application is deployed). 
          You can initialize servlet context related data here.
       */
-      // 从文件中加载数据到内存中
-        System.out.println("一个监听器启动了！");
-
+        logger.debug("资源监听器启动了！");
+        // 加载所有资源
+        Resource.loadAllResource();
     }
 
     public void contextDestroyed(ServletContextEvent sce) {

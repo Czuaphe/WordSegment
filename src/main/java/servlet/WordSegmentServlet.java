@@ -6,7 +6,6 @@ import com.google.gson.JsonPrimitive;
 import dao.SimpleWordSegment;
 import dao.WordSegment;
 import org.apache.log4j.Logger;
-import util.Constant;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -15,7 +14,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.List;
 
 @WebServlet(name = "WordSegmentServlet", value = "/WordSegmentServlet")

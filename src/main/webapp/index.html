@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <!-- 框架所需CSS文件 -->
+    <link rel="stylesheet" href="./css/bootstrap.min.css">
+    <link rel="stylesheet" href="./css/font-awesome.min.css">
+    <link rel="stylesheet" href="./css/web-fonts.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.0.2/css/swiper.min.css">
+
+    <!-- 框架所需JS文件 -->
+    <script src="./js/base/jquery-3.2.1.min.js"></script>
+    <script src="./js/base/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.0.2/js/swiper.min.js"></script>
+
+    <!-- vue -->
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+
+    <script src="./js/checkbox-group.js"></script>
+
+
+    <script src="./js/wordsegment.js"></script>
+
+    <style>
+
+        .red {
+            background-color: red;
+        }
+
+        .blue {
+            background-color: blue;
+        }
+
+        .title-font {
+            font-family: "Arial","Microsoft YaHei","黑体","宋体",sans-serif;
+        }
+
+
+        @font-face {
+            font-family:'Glyphicons Halflings';
+            src:url(/fonts/glyphicons-halflings-regular.eot);
+            src:url(/fonts/glyphicons-halflings-regular.eot?#iefix) format('embedded-opentype'),
+            url(/fonts/glyphicons-halflings-regular.woff2) format('woff2'),
+            url(/fonts/glyphicons-halflings-regular.woff) format('woff'),
+            url(/fonts/glyphicons-halflings-regular.ttf) format('truetype'),
+            url(/fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular) format('svg')
+        }
+
+
+
+        .demo--label {
+            margin:8px 30px 0 0;
+            display:inline-block;
+            /*font-size: 18px;*/
+        }
+        .demo--radio {
+            display:none
+        }
+        .demo--radioInput {
+            background-color:#fff;
+            border:1px solid rgba(0,0,0,0.15);
+            border-radius:100%;
+            display:inline-block;
+            height:16px;
+            margin-right:10px;
+            /*margin-top:-1px;*/
+            vertical-align:middle;
+            width:16px;
+            line-height:1;
+
+        }
+
+        .demo--radio:checked + .demo--radioInput:after {
+
+            /*position:relative;*/
+            /*!*top:1px;*!*/
+            /*display:inline-block;*/
+            /*font-family:'Glyphicons Halflings';*/
+            /*font-style:normal;*/
+            /*font-weight:400;*/
+            /*line-height:1;*/
+            /*-webkit-font-smoothing:antialiased;*/
+            /*-moz-osx-font-smoothing:grayscale;*/
+
+            /*content:"\e013";*/
+            content: "";
+            background-color:rgb(51, 122, 183);
+            color: white;
+            border-radius:100%;
+            display:inline-block;
+            height:12px;
+            /*margin-left: 1px;*/
+            /*margin-top: 1px;*/
+            margin: 1px;
+            width:12px;
+        }
+        .demo--checkbox.demo--radioInput,.demo--radio:checked+.demo--checkbox.demo--radioInput:after{
+            border-radius:0
+        }
+
+        .loading {
+            animation: ratato 1s infinite ;
+        }
+
+        @keyframes ratato
+        {
+            0% {
+                transform:rotate(0deg);
+            }
+            80% {
+                transform:rotate(180deg);
+            }
+
+            100% {
+                transform:rotate(180deg);
+            }
+        }
+
+        .btn-default.disabled {
+            border:1px solid rgb(51, 122, 183);
+            color: rgb(51, 122, 183);
+        }
+
+        .segment-text {
+            padding: 10px;
+            margin:10px 0;
+        }
+
+        .showInsertPanel {
+            /*transform:rotate(180deg);*/
+            animation: caret 1s alternate;
+            animation-fill-mode:forwards
+        }
+
+        .hiddenInsertPanel {
+
+        }
+
+        @keyframes caret {
+            0% {
+                transform:rotate(0deg);
+            }
+
+            100%{
+                transform:rotate(180deg);
+            }
+        }
+
+
+    </style>
+
+</head>
+<body style="background-color: gainsboro">
+    <!-- 对应不同的分词算法在分词的正确率上有不同的结果 -->
+    <div class="container">
+        <!-- 标题 -->
+        <div class="row"  style="margin-top: 20px">
+            <div class="col-md-12">
+                <div class="panel panel-body" >
+                    <div class="text-center title-font" style="font-size: 30px;margin: 20px 0;">基于匹配的中文分词算法在线测试平台</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" style="margin-top: 15px">
+            <!-- 菜单 -->
+            <div class="col-md-3" >
+                <div class="panel panel-body">
+                    <ul class="nav nav-pills nav-stacked">
+                        <li role="presentation" class="text-center active"><a href="#">分词</a></li>
+                        <li role="presentation" class="text-center"><a href="#">原理</a></li>
+                        <li role="presentation" class="text-center"><a href="#">记录</a></li>
+                        <li role="presentation" class="text-center"><a href="#">统计</a></li>
+                        <li role="presentation" class="text-center"><a href="#">更多</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 分词页 -->
+            <div id="app" class="col-md-9" >
+
+                <!-- 分词面板 -->
+                <div class="panel panel-body">
+                    <!-- 分词框 -->
+                    <div class="row">
+                        <div class="col-md-offset-1 col-md-10" style="margin-top: 30px">
+                            <textarea id="text" v-model="text" class="center-block form-control" style="resize: none; padding: 10px 30px;font-size: 18px" name="text" cols="50" rows="1" placeholder="请输入要分词的句子"></textarea>
+                        </div>
+                    </div>
+                    <!-- 分词算法和按钮 -->
+                    <div class="row">
+                        <div class="col-md-offset-1 col-md-10" style="margin-top: 20px;margin-bottom: 10px">
+                            <div>
+                                <div class="pull-left" style="padding-left: 20px;">
+
+                                    <label class="demo--label" title="正向最大匹配算法">
+                                        <input class="demo--radio" v-model="selectAlg" type="checkbox" value="MM" checked>
+                                        <span class="demo--checkbox demo--radioInput"></span>MM
+                                    </label>
+                                    <label class="demo--label"  title="反向最大匹配算法">
+                                        <input class="demo--radio" v-model="selectAlg" type="checkbox" value="RMM" checked>
+                                        <span class="demo--checkbox demo--radioInput"></span>RMM
+                                    </label>
+                                    <label class="demo--label" title="最小切分算法">
+                                        <input class="demo--radio" v-model="selectAlg" type="checkbox" value="MC" checked>
+                                        <span class="demo--checkbox demo--radioInput"></span>MC
+                                    </label>
+                                    <label class="demo--label" title="双向最大匹配算法">
+                                        <input class="demo--radio" v-model="selectAlg" type="checkbox" value="BM" checked>
+                                        <span class="demo--checkbox demo--radioInput"></span>BM
+                                    </label>
+                                </div>
+                                <button id="segment" @click="segment"  class="btn btn-primary pull-right" style="width: 120px;font-size: 16px">分词</button>
+                                <button id="clear" @click="clear" class="btn btn-default pull-right" style="width: 120px;font-size: 16px;margin-right: 20px;">清空</button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <!-- test... -->
+                <!--<div class="panel panel-body">
+
+                    <div>
+                        <p style="font-size:18px;margin-top:30px;color:rgba(0,0,0,0.44)">约吗?</p>
+                        <label class="demo&#45;&#45;label">
+                            <input class="demo&#45;&#45;radio" type="radio" name="demo-radio">
+                            <span class="demo&#45;&#45;radioInput"></span>约
+                        </label>
+                        <label class="demo&#45;&#45;label">
+                            <input class="demo&#45;&#45;radio" type="radio" name="demo-radio">
+                            <span class="demo&#45;&#45;radioInput"></span>不约，叔叔我们不约
+                        </label>
+                    </div>
+                    <div>
+                        <p style="font-size:18px;margin-top:30px;color:rgba(0,0,0,0.44)">你喜欢的电影明星是？</p>
+                        <label class="demo&#45;&#45;label">
+                            <input id="CJK" class="demo&#45;&#45;radio" type="checkbox" name="demo-checkbox1">
+                            <span class="demo&#45;&#45;checkbox demo&#45;&#45;radioInput">
+                                &lt;!&ndash;<i class="glyphicon glyphicon-ok"></i>&ndash;&gt;
+                            </span>苍井空
+                        </label>
+                        <label class="demo&#45;&#45;label">
+                            <input class="demo&#45;&#45;radio" type="checkbox" name="demo-checkbox2">
+                            <span class="demo&#45;&#45;checkbox demo&#45;&#45;radioInput"></span>波多野结衣
+                        </label>
+                        <label class="demo&#45;&#45;label">
+                            <input class="demo&#45;&#45;radio" type="checkbox" name="demo-checkbox3">
+                            <span class="demo&#45;&#45;checkbox demo&#45;&#45;radioInput"></span>罗玉凤
+                        </label>
+                    </div>
+                </div>-->
+                <!-- loading -->
+                <div v-if="isLoading" class="panel panel-body">
+                    <div class="text-center" style="font-size: 26px;">
+                        <i class="glyphicon glyphicon-hourglass loading" style="color: rgb(51, 122, 183);"></i>
+                        <!--<div style="font-size: 16px;margin-top: 5px">分词中。。。</div>-->
+                    </div>
+                </div>
+                <!-- 分词结果面板 -->
+                <div v-if="data.result.length != 0" class="panel panel-body" >
+                    <h2 class="text-center">分词结果</h2>
+
+                    <!-- 所有分词结果 -->
+                    <div v-for="(res, index) of data.result" v-if="res.dataSegment.length != 0" >
+                        <!-- 算法结果 -->
+                        <div  class="row" style="padding: 0 30px;">
+                            <!-- 算法名称和时间 -->
+                            <div style="font-size: 16px">{{ constant[res.name] }}
+                                <div class="pull-right">
+                                    时间：<span style="font-size:26px;color: rgb(51, 122, 183);">{{res.time}}ms</span>
+                                </div>
+                            </div>
+                            <!-- 分词结果 -->
+                            <div style="margin-top: 20px;">
+                                <div  v-for="(item, index) of res.dataSegment" class="pull-left">
+                                    <button class="btn btn-default btn-lg pull-left disabled segment-text">{{item}}</button>
+                                    <div v-if="index != res.dataSegment.length - 1" class="pull-left" style="padding: 10px 10px;margin:13px 0;"><span style="">/</span></div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 分隔线 -->
+                        <div class="row">
+                            <div class="page-header" style="margin-top: 10px"></div>
+                        </div>
+                    </div>
+
+                    <!-- 操作 -->
+                    <div>
+                        <button id="showInsertPanel" @click="showInsertPanel" class="btn btn-primary center-block" style="width: 150px;font-size: 16px">加入数据库<span class="caret" style="margin-left: 5px;"></span></button>
+                    </div>
+                </div>
+
+                <!-- 插入数据库面板 -->
+                <div v-if="isShowInsert" class="panel panel-body" style="padding: 15px 30px;">
+                    <h2 class="">
+                        <span>句子：{{text}}</span>
+                    </h2>
+                    <div class="row col-md-12">
+                        <div class="pull-left" style="font-size: 16px;margin-top: 7px">
+                            正确分词结果为：
+                        </div>
+
+                        <div class="pull-left" style="padding-left: 20px;">
+                            <label class="demo--label" title="正向最大匹配算法">
+                                <input @click="getCorrectResult" v-model="correctAlg" class="demo--radio" type="radio" value="MM">
+                                <span class="demo--radioInput"></span>MM
+                            </label>
+                            <label class="demo--label" title="反向最大匹配算法">
+                                <input @click="getCorrectResult" v-model="correctAlg" class="demo--radio" type="radio" value="RMM">
+                                <span class="demo--radioInput"></span>RMM
+                            </label>
+                            <label class="demo--label" title="最小切分算法">
+                                <input @click="getCorrectResult" v-model="correctAlg" class="demo--radio" type="radio" value="MC">
+                                <span class=" demo--radioInput"></span>MC
+                            </label>
+                            <label class="demo--label" title="双向最大匹配算法">
+                                <input @click="getCorrectResult" v-model="correctAlg" class="demo--radio" type="radio" value="BM">
+                                <span class=" demo--radioInput"></span>BM
+                            </label>
+                            <label class="demo--label" title="双向最大匹配算法">
+                                <input @click="getCorrectResult" v-model="correctAlg" class="demo--radio" type="radio" value="ALLNO">
+                                <span class=" demo--radioInput"></span>都不正确
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="row col-md-12" style="margin-top: 20px">
+                        <div  v-if="isCustomResult" v-for="(char, index) of correct">
+                            <button v-if="tempIndex != index" :id="index" @click="getResultIndex" class="btn btn-default btn-lg pull-left segment-text">{{char}}</button>
+                            <button v-else :id="index" @click="getResultIndex" class="btn btn-primary btn-lg pull-left segment-text">{{char}}</button>
+                            <div v-if="index != correct.length - 1" class="pull-left" style="padding: 10px 10px;margin:13px 0;"><span style="">/</span></div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12" style="padding: 0;margin-top: 20px">
+                        <div class="text-center" style="display: block;">
+                            <button @click="resetResult" class="btn btn-default pull-left" style="width: 120px;font-size: 16px;">重置</button>
+                            <button @click="uploadCorrectResult" class="btn btn-primary pull-left" style="width: 120px;font-size: 16px;margin: 0 10px;">确定</button>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+        <!-- footer -->
+        <div class="row"  style="margin-top: 20px">
+            <div class="col-md-12">
+                <div class="panel panel-body" >
+                    <div class="text-center" style="font-size: 20px;margin: 20px 0;">~最终解释权归本网站所有~</div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        $(function () {
+            var result = [];
+            $("#true-result button").click(function (ev) {
+                var target = ev.target;
+                $(target).css("background-color", "rgb(51, 122, 183)");
+                $(target).css("color", "white");
+                console.log(target);
+            });
+
+            var text = document.getElementById("text");
+            autoTextarea(text);
+
+        });
+
+        // 常量数据
+        var constant = {};
+        constant['MM'] = '正向最大匹配算法（MM）';
+        constant['RMM'] = '反向最大匹配算法（RMM）';
+        constant['MC'] = '最少切分算法（MC）';
+        constant['BM'] = '双向最大匹配算法（BM）';
+
+        // 全局数据
+        var data = {
+            text: "今天天气真好啊",   // 要分词的句子（分词面板一直显示）
+            result: [{
+                "name": "MM",
+                "dataSegment": ["我","是", "一个", "人", "啊", "也", "可能", "不", "是", "啊"],
+                "time": 896
+            }, {
+                "name": "RMM",
+                "dataSegment": ["我","是", "一个", "人", "啊", "也", "可能", "不", "是", "啊"],
+                "time": 896
+            }], // 算法分词结果数组（是否显示算法分词结果面板）
+            selectAlg: [], // 分词时选择算法的结果
+            correctAlg: [], // 正确的分词算法
+            correct: [], // 正确的分词结果
+            isLoading: false,  // 是否正在加载中
+            isShowInsert:false,// 是否显示插入数据库面板
+            isCustomResult: false, // 是否自定义正确答案
+            tempIndex: -1 // 正确答案的暂存索引（合并单字）
+        };
+
+        // vue组件
+        var app = new Vue({
+            el: "#app",
+            data: data,
+            created: function () {
+                console.log("created");
+                // $("#showInsertPanel").click(function () {
+                //     if (data.isShowInsert) {
+                //         $("#showInsertPanel span").toggleClass("showInsertPanel");
+                //     }
+                // });
+            },
+            watch: {
+                text: function (val) {
+                    // 分词结果清空
+                    this.result = [];
+                    this.isShowInsert = false;
+                }
+            },
+            methods: {
+                clear: function () {
+                    console.log(this.text);
+                    this.text = '';
+                },
+                segment: function () {
+                    if (this.text == null || this.text == "") {
+                        alert("分词字符串不能为空！");
+                        return ;
+                    }
+                    $.getJSON("http://localhost:8080/WordSegmentServlet", {text: this.text}, function (json) {
+                        data.isLoading = false;
+                        if (json.status == true) {
+                            console.log("json.result: " + json.result);
+                            data.result = json.result;
+                        } else {
+                            alert(json.error);
+                        }
+                    });
+                    this.isLoading = true;
+                },
+                showInsertPanel: function () {
+                    this.isShowInsert = !this.isShowInsert;
+                    data.isCustomResult = false;
+                    if (!this.isShowInsert)  {
+                        this.correct = [];
+                        this.correctAlg = [];
+                    } else {
+                        // 将单字插入正确答案的数组中
+                        this.correct = [];
+                        for(var i = 0; i < this.text.length; i ++) {
+                            // console.log(this.text[i]);
+                            var string = this.text[i];
+                            this.correct.push(string);
+                        }
+                    }
+                },
+
+                getCorrectResult: function (ev) {
+                    var value = ev.target.value;
+                    // var value = $("input[type=radio]:checked").val();
+                    console.log(value);
+                    var flag = value == "ALLNO";
+                    console.log(flag);
+                    this.isCustomResult = flag;
+                },
+                // 编辑正确的答案时，返回的index
+                getResultIndex: function (ev) {
+                    var id = ev.target.id;
+                    console.log(id);
+                    if (this.tempIndex == -1) {
+                        this.tempIndex = id;
+                    } else {
+                        console.log("not equal");
+                        if (this.tempIndex != id) {
+
+                            var max = id;
+                            var min = this.tempIndex;
+                            if (this.tempIndex > id) {
+                                max = this.tempIndex;
+                                min = id;
+                            }
+                            console.log("max: " + max);
+                            console.log("min: " + min);
+                            var temp = [];
+                            var string = "";
+                            for(var i = 0; i < this.correct.length; i ++) {
+                                console.log(string);
+                                if (i < min || i > max)  {
+                                    temp.push(this.correct[i]);
+                                }
+                                if (i >= min && i <= max) {
+                                    string += this.correct[i];
+                                }
+                                if (i == max) {
+                                    temp.push(string);
+                                    string = "";
+                                }
+                            }
+                            this.correct = temp;
+                        }
+                        this.tempIndex = -1;
+                    }
+                },
+
+                resetResult: function () {
+                    this.correct = [];
+                    for(var i = 0; i < this.text.length; i ++) {
+                        // console.log(this.text[i]);
+                        var string = this.text[i];
+                        this.correct.push(string);
+                    }
+                },
+
+                uploadCorrectResult: function () {
+
+                    // 根据对应的算法得到对应的正确结果
+                    var array = [];
+
+                    if (this.correctAlg != "ALLNO") {
+                        for(var index in this.result) {
+                            if (this.result[index].name == this.correctAlg) {
+                                array = this.result[index].dataSegment;
+                                break;
+                            }
+                        }
+                    } else {
+                        array = this.correct;
+                    }
+                    console.log("method name:" + this.correctAlg);
+                    console.log("correct: " + array);
+
+                    $.getJSON("CorrectResultServlet", {text:this.text,correct: array}, function (json) {
+                        if (json.status == "true") {
+                            alert("加入数据库成功")
+                        }
+                    })
+                }
+            }
+
+        })
+
+    </script>
+
+
+</body>
+</html>
